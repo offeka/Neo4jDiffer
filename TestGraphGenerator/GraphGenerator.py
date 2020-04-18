@@ -1,5 +1,5 @@
-from TestGraphGenerator.GraphModels.PersonNode import Person
-from TestGraphGenerator.QueryGenerator.ClassConverter import generate_query_string
+from TestGraphGenerator.GraphModels.BaseModels.Node import Node
 
-a = Person('test')
-generate_query_string(a)
+a = Node(node_type="person")
+a['test'] = 'value'
+print(a._generate_query_str())
