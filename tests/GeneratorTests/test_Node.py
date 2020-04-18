@@ -2,13 +2,13 @@ from TestGraphGenerator.GraphModels.BaseModels.Node import Node
 import pytest
 
 
-def test_generate_query_str():
+def test_generate_query():
     # Arrange
     test_node = Node("test", properties={"prop1": "value"})
-    expected = "MERGE (n:Test {prop1: 'value'})"
+    expected = "(n:Test {prop1: 'value'})"
 
     # Act
-    result = test_node.generate_query_str()
+    result = test_node.as_query()
 
     # Assert
     assert result == expected
@@ -31,4 +31,4 @@ def test_no_properties_error():
     test_node = Node("test")
     # Act
     with pytest.raises(ValueError):
-        test_node.generate_query_str()
+        test_node.as_query()

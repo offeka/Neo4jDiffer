@@ -1,11 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Dict, AnyStr
 
-from TestGraphGenerator.GraphModels.BaseModels.BaseDbItem import BaseDbItem
-
 
 @dataclass
-class Node(BaseDbItem):
+class Node:
     node_type: AnyStr
     properties: Dict[AnyStr, AnyStr] = None
 
@@ -23,7 +21,7 @@ class Node(BaseDbItem):
     def __eq__(self, other):
         return self.node_type == other.node_type and self.properties == other.properties
 
-    def generate_query_str(self) -> AnyStr:
+    def __generate_properties(self) -> AnyStr:
         properties = "{"
         if not self.properties:
             raise ValueError("Missing node properties")
@@ -31,4 +29,7 @@ class Node(BaseDbItem):
             properties += f"{key}: '{value}', "
         properties = properties[:-2]
         properties += "}"
-        return f"MERGE (n:{self.node_type} {properties})"
+        return properties
+
+    def as_query(self, node_name="n") -> AnyStr:
+        return f"({node_name}:{self.node_type} {self.__generate_properties()})"
