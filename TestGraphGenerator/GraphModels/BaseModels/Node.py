@@ -7,10 +7,11 @@ from TestGraphGenerator.GraphModels.BaseModels.BaseDbItem import BaseDbItem
 @dataclass
 class Node(BaseDbItem):
     node_type: AnyStr
-    properties: Dict[AnyStr, AnyStr] = field(init=False)
+    properties: Dict[AnyStr, AnyStr] = None
 
     def __post_init__(self):
-        self.properties = {}
+        if not self.properties:
+            self.properties = {}
         self.node_type = self.node_type.capitalize()
 
     def __getitem__(self, item):
@@ -18,6 +19,9 @@ class Node(BaseDbItem):
 
     def __setitem__(self, key, value):
         self.properties[key] = value
+
+    def __eq__(self, other):
+        return self.node_type == other.node_type and self.properties == other.properties
 
     def generate_query_str(self) -> AnyStr:
         properties = "{"
@@ -27,6 +31,4 @@ class Node(BaseDbItem):
             properties += f"{key}: '{value}', "
         properties = properties[:-2]
         properties += "}"
-        return f"MERGE (p:{self.node_type} {properties})"
-
-
+        return f"MERGE (n:{self.node_type} {properties})"
