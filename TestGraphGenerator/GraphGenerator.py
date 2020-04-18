@@ -1,2 +1,1 @@
-from TestGraphGenerator.GraphModels.BaseModels.Node import Node
-from TestGraphGenerator.GraphModels.BaseModels.Relationship import Relationship
+

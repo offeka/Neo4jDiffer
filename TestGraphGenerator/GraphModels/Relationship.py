@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import AnyStr
-from TestGraphGenerator.GraphModels.BaseModels.Node import Node
+from TestGraphGenerator.GraphModels.Node import Node
 
 
 @dataclass

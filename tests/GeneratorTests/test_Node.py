@@ -1,4 +1,4 @@
-from TestGraphGenerator.GraphModels.BaseModels.Node import Node
+from TestGraphGenerator.GraphModels.Node import Node
 import pytest
 
 

@@ -1,5 +1,5 @@
-from TestGraphGenerator.GraphModels.BaseModels.Node import Node
-from TestGraphGenerator.GraphModels.BaseModels.Relationship import Relationship
+from TestGraphGenerator.GraphModels.Node import Node
+from TestGraphGenerator.GraphModels.Relationship import Relationship
 
 
 def test_creating_relationship():
