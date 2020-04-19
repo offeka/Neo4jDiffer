@@ -4,6 +4,10 @@ from typing import Dict, AnyStr
 
 @dataclass
 class Node:
+    """
+    A neo4j node
+    sometimes called an edge
+    """
     node_type: AnyStr
     properties: Dict[AnyStr, AnyStr] = None
 

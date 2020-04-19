@@ -5,6 +5,10 @@ from TestGraphGenerator.Models.Node import Node
 
 @dataclass
 class Relationship:
+    """
+    A neo4j relationship between 2 nodes
+    sometimes called a vertex
+    """
     node_a: Node
     relationship_type: AnyStr
     node_b: Node
