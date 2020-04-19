@@ -33,5 +33,5 @@ def test_node_query_sanity():
     test_node = Node("TestType", {"prop1": "value1"})
     # Act
     result = node_query(test_node)
-    # Asset
+    # Assert
     assert result == expected
