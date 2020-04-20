@@ -1,7 +1,9 @@
 from typing import AnyStr
 
+from TestGraphGenerator.Models import Node, Relationship
 
-def relationship_query(rel, node_names: tuple = ("nodeA", "nodeB")) -> AnyStr:
+
+def relationship_query(rel: Relationship, node_names: tuple = ("nodeA", "nodeB")) -> AnyStr:
     """
     Transforms a relationship object to a literal neo4j query of the same relationship
     without changing the original object
@@ -25,7 +27,7 @@ def relationship_nodes_query(rel, node_names: tuple = ("nodeA", "nodeB")) -> Any
     return f"{node_query(rel.node_a, node_a)}, {node_query(rel.node_b, node_b)}"
 
 
-def generate_properties(node) -> AnyStr:
+def generate_properties(node: Node) -> AnyStr:
     """
     Generates a neo4j properties of a node transforms the properties dict from {"key": "value"} to {key: 'value'}
     :param node: the node to transform
@@ -41,7 +43,7 @@ def generate_properties(node) -> AnyStr:
     return properties
 
 
-def node_query(node, node_name="n") -> AnyStr:
+def node_query(node: Node, node_name="n") -> AnyStr:
     """
     Creates a query representation of a single node
     :param node: the node to transform
