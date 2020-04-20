@@ -14,7 +14,7 @@ def create_graph_map(path: AnyStr):
     loads names for generating from a file.
     :param path: the path to save the graph to.
     """
-    names = load_names_data_set(GlobalSettings.NAMES_DATA_SET_PATH)
+    names = load_names_data_set(path)
     if names:
         names_nodes = [Node(GlobalSettings.TEST_GRAPH_TYPE, properties={"name": name}) for name in names]
         with Neo4jWriter(GlobalSettings.DB_ADDRESS, GlobalSettings.DB_USERNAME, GlobalSettings.DB_PASSWORD) as writer:
@@ -48,4 +48,3 @@ def flush_nodes_to_graph(nodes: Iterable[Node], writer: Neo4jWriter) -> None:
         writer.write(create_node_query(node))
 
 
-create_graph_map()

@@ -3,17 +3,19 @@ from typing import AnyStr
 from TestGraphGenerator.Models import Node, Relationship
 
 
-def relationship_query(rel: Relationship, node_names: tuple = ("nodeA", "nodeB")) -> AnyStr:
+def relationship_query(rel: Relationship, node_names: tuple = ("nodeA", "nodeB"),
+                       relationship_name: AnyStr = "r") -> AnyStr:
     """
     Transforms a relationship object to a literal neo4j query of the same relationship
     without changing the original object
     IMPORTANT! this function only generates a partial query string and shouldn't be used alone
     :param rel: the relationship to transform
     :param node_names: the names of the nodes in the query. useful for multi query strings
+    :param relationship_name: the name of the relationship in the query. useful for multi query strings
     :return: a string of the query
     """
     node_a, node_b = node_names
-    return f"({node_a})-[r:{rel.relationship_type}]-({node_b})"
+    return f"({node_a})-[{relationship_name}:{rel.relationship_type}]-({node_b})"
 
 
 def relationship_nodes_query(rel, node_names: tuple = ("nodeA", "nodeB")) -> AnyStr:
