@@ -1,6 +1,6 @@
 import pytest
 
-from TestGraphGenerator.DbManager.DbSaver import node_json, relationship_json, graph_json
+from TestGraphGenerator.DbTranformations.DbSaver import node_json, relationship_json, graph_json
 from TestGraphGenerator.Models import Node, Relationship
 from TestGraphGenerator.Models.Graph import Graph
 

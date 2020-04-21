@@ -11,7 +11,7 @@ class Node:
     """
     node_type: AnyStr
     properties: Dict[AnyStr, AnyStr] = None
-    given_id: InitVar[Union[uuid.UUID, str]] = uuid.uuid4()
+    given_id: InitVar[Union[uuid.UUID, str]] = None
 
     def __post_init__(self, given_id):
         if not self.properties:
@@ -19,7 +19,10 @@ class Node:
         try:
             self.node_id = self.properties["node_id"]
         except KeyError:
-            self.node_id = given_id
+            if given_id:
+                self.node_id = given_id
+            else:
+                self.node_id = uuid.uuid4()
 
     def __getitem__(self, item):
         return self.properties[item]

@@ -1,6 +1,6 @@
 import pytest
 
-from TestGraphGenerator.DbManager.DbLoader import load_node, load_relationship, load_graph
+from TestGraphGenerator.DbTranformations.DbLoader import load_node, load_relationship, load_graph
 from TestGraphGenerator.Models import Node, Relationship
 from TestGraphGenerator.Models.Graph import Graph
 

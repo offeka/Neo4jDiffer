@@ -4,10 +4,10 @@ from typing import AnyStr, Dict, Optional, Iterable, List
 import neo4j
 
 from DbInterface.Neo4jStream import Neo4jStream
-from TestGraphGenerator.Models import Node, Relationship, relationship_query
+from TestGraphGenerator.Models import Node, Relationship
 from TestGraphGenerator.Models.Database import Database
 from TestGraphGenerator.Models.Graph import Graph
-from TestGraphGenerator.QuerySticher import create_node_query
+from TestGraphGenerator.QuerySticher import create_node_query, create_relationship_query
 
 
 def load_from_neo4j(stream: Neo4jStream, name: AnyStr) -> Database:
@@ -17,7 +17,6 @@ def load_from_neo4j(stream: Neo4jStream, name: AnyStr) -> Database:
     :param name: the name of the database
     :return: the database object
     """
-    stream.write(f":use {name}")
     nodes = [Node(result.labels[0], result.items()) for result in stream.read("MATCH (n) RETURN n")]
     nodes_by_ids = {node.node_id: node for node in nodes}
     relationships = load_relationships_neo4j(stream, nodes_by_ids)
@@ -44,13 +43,21 @@ def load_relationships_neo4j(stream: Neo4jStream, nodes_by_id: Dict[AnyStr, Node
     return relationships
 
 
-def load_db(database: Database, stream: Neo4jStream) -> None:
+def load_database(database_raw: Dict) -> Database:
+    """
+    Loads a database from a json object to a python one
+    :param database_raw: the database json
+    :return: the database object
+    """
+    return Database(load_graph(database_raw["graph"]), database_raw["name"])
+
+
+def load_database_neo4j(database: Database, stream: Neo4jStream) -> None:
     """
     Loads a database from an object into neo4j
     :param database: the database to load
     :param stream: the neo4j interface to use
     """
-    stream.write(f"CREATE OR REPLACE DATABASE {database.name}")
     flush_nodes_to_graph(database.graph.nodes, stream)
     flush_relationships_to_graph(database.graph.relationships, stream)
 
@@ -72,7 +79,7 @@ def flush_relationships_to_graph(relationships: Iterable[Relationship], stream: 
     :param stream: a neo4j interface to send queries to
     """
     for relationship in relationships:
-        stream.write(relationship_query(relationship))
+        stream.write(create_relationship_query(relationship))
 
 
 def load_node(node_raw: Dict) -> Node:
