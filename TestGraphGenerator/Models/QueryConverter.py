@@ -1,7 +1,6 @@
-from typing import AnyStr, Dict
+from typing import AnyStr
 
 from TestGraphGenerator.Models import Node, Relationship
-from TestGraphGenerator.Models.Graph import Graph
 
 
 def relationship_query(rel: Relationship, node_names: tuple = ("nodeA", "nodeB"),
@@ -54,16 +53,3 @@ def node_query(node: Node, node_name="n") -> AnyStr:
     :return: a string of the query
     """
     return f"({node_name}:{node.node_type} {generate_properties(node)})"
-
-
-def node_json(node: Node) -> Dict:
-    return {"node_type": node.node_type, "properties": node.properties}
-
-
-def relationship_json(rel: Relationship) -> Dict:
-    return {"nodeA": rel.node_a.node_id, "relationship_type": rel.relationship_type, "nodeB": rel.node_b.node_id}
-
-
-def graph_json(graph: Graph) -> Dict:
-    return {"nodes": {node.node_id: node_json(node) for node in graph.nodes},
-            "relations": [relationship_json(rel) for rel in graph.relations]}

@@ -1,7 +1,7 @@
 from typing import AnyStr
 
 from TestGraphGenerator.Models import Node, Relationship
-from TestGraphGenerator.Models.Tranformations import node_query, relationship_nodes_query, relationship_query
+from TestGraphGenerator.Models.QueryConverter import node_query, relationship_nodes_query, relationship_query
 
 
 def create_node_query(node: Node) -> AnyStr:

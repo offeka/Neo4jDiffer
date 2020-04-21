@@ -12,7 +12,9 @@ def test_node() -> Node:
 
 @pytest.fixture()
 def test_relationship() -> Relationship:
-    return Relationship(Node("TestTypeA", {"prop1": "value1"}, "1"), "Knows", Node("TestTypeB", {"prop2": "value2"}, "2"))
+    return Relationship(Node("TestTypeA", {"prop1": "value1"}, "1"),
+                        "Knows",
+                        Node("TestTypeB", {"prop2": "value2"}, "2"))
 
 
 def test_create_node_query_sanity(test_node):
