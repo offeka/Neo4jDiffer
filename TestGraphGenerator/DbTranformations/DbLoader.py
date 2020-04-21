@@ -7,10 +7,10 @@ from DbInterface.Neo4jStream import Neo4jStream
 from TestGraphGenerator.Models import Node, Relationship
 from TestGraphGenerator.Models.Database import Database
 from TestGraphGenerator.Models.Graph import Graph
-from TestGraphGenerator.QuerySticher import create_node_query, create_relationship_query
+from TestGraphGenerator.DbTranformations.QuerySticher import create_node_query, create_relationship_query
 
 
-def load_from_neo4j(stream: Neo4jStream, name: AnyStr) -> Database:
+def import_neo4j_database(stream: Neo4jStream, name: AnyStr) -> Database:
     """
     Loads a graph from neo4j as a python object
     :param stream: the neo4j interface to load from
@@ -19,11 +19,11 @@ def load_from_neo4j(stream: Neo4jStream, name: AnyStr) -> Database:
     """
     nodes = [Node(result.labels[0], result.items()) for result in stream.read("MATCH (n) RETURN n")]
     nodes_by_ids = {node.node_id: node for node in nodes}
-    relationships = load_relationships_neo4j(stream, nodes_by_ids)
+    relationships = export_relationships_neo4j(stream, nodes_by_ids)
     return Database(Graph(nodes, relationships), name)
 
 
-def load_relationships_neo4j(stream: Neo4jStream, nodes_by_id: Dict[AnyStr, Node]) -> List[Relationship]:
+def export_relationships_neo4j(stream: Neo4jStream, nodes_by_id: Dict[AnyStr, Node]) -> List[Relationship]:
     """
     Loads all relationships from a neo4j result
     :param stream: the neo4j stream to load the relationships from
@@ -43,26 +43,26 @@ def load_relationships_neo4j(stream: Neo4jStream, nodes_by_id: Dict[AnyStr, Node
     return relationships
 
 
-def load_database(database_raw: Dict) -> Database:
+def import_database_json(database_raw: Dict) -> Database:
     """
     Loads a database from a json object to a python one
     :param database_raw: the database json
     :return: the database object
     """
-    return Database(load_graph(database_raw["graph"]), database_raw["name"])
+    return Database(import_graph_json(database_raw["graph"]), database_raw["name"])
 
 
-def load_database_neo4j(database: Database, stream: Neo4jStream) -> None:
+def export_database_neo4j(database: Database, stream: Neo4jStream) -> None:
     """
     Loads a database from an object into neo4j
     :param database: the database to load
     :param stream: the neo4j interface to use
     """
-    flush_nodes_to_graph(database.graph.nodes, stream)
-    flush_relationships_to_graph(database.graph.relationships, stream)
+    export_nodes_to_graph(database.graph.nodes, stream)
+    export_relationships_to_graph(database.graph.relationships, stream)
 
 
-def flush_nodes_to_graph(nodes: Iterable[Node], stream: Neo4jStream) -> None:
+def export_nodes_to_graph(nodes: Iterable[Node], stream: Neo4jStream) -> None:
     """
     Creates a list of nodes in the neo4j graph.
     :param nodes: the nodes to create in the db
@@ -72,7 +72,7 @@ def flush_nodes_to_graph(nodes: Iterable[Node], stream: Neo4jStream) -> None:
         stream.write(create_node_query(node))
 
 
-def flush_relationships_to_graph(relationships: Iterable[Relationship], stream: Neo4jStream) -> None:
+def export_relationships_to_graph(relationships: Iterable[Relationship], stream: Neo4jStream) -> None:
     """
     Writes relationships to the neo4j database.
     :param relationships: the relationships to create in the db
@@ -82,7 +82,7 @@ def flush_relationships_to_graph(relationships: Iterable[Relationship], stream: 
         stream.write(create_relationship_query(relationship))
 
 
-def load_node(node_raw: Dict) -> Node:
+def import_node_json(node_raw: Dict) -> Node:
     """
     Loads a node from raw json
     :param node_raw: the json to load from
@@ -91,7 +91,7 @@ def load_node(node_raw: Dict) -> Node:
     return Node(node_raw["node_type"], node_raw["properties"])
 
 
-def load_relationship(relationship_raw: Dict, nodes: Dict[AnyStr, Node]) -> Relationship:
+def import_relationship_json(relationship_raw: Dict, nodes: Dict[AnyStr, Node]) -> Relationship:
     """
     Loads a relationship from a json
     :param relationship_raw: the relationship to load
@@ -102,7 +102,7 @@ def load_relationship(relationship_raw: Dict, nodes: Dict[AnyStr, Node]) -> Rela
                         nodes[relationship_raw["node_b"]])
 
 
-def load_graph(graph_raw: Dict) -> Optional[Graph]:
+def import_graph_json(graph_raw: Dict) -> Optional[Graph]:
     """
     Loads a graph object from a json object
     :param graph_raw: the graph to load
@@ -110,9 +110,9 @@ def load_graph(graph_raw: Dict) -> Optional[Graph]:
     """
     try:
         graph = Graph()
-        graph.nodes = [load_node(node_raw) for node_raw in graph_raw["nodes"]]
+        graph.nodes = [import_node_json(node_raw) for node_raw in graph_raw["nodes"]]
         nodes_by_ids = {node.node_id: node for node in graph.nodes}
-        graph.relationships = [load_relationship(rel_raw, nodes_by_ids) for rel_raw in graph_raw["relationships"]]
+        graph.relationships = [import_relationship_json(rel_raw, nodes_by_ids) for rel_raw in graph_raw["relationships"]]
         return graph
     except KeyError as e:
         raise ValueError(f"Failed loading graph with error {e}")

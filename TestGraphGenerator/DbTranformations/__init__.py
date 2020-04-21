@@ -1,2 +1,2 @@
-from .DbLoader import load_database
-from .DbSaver import database_json
+from .DbLoader import import_database_json
+from .DbSaver import export_database_json

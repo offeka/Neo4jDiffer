@@ -1,7 +1,7 @@
 import pytest
 
 from TestGraphGenerator.Models import Node, Relationship
-from TestGraphGenerator.QuerySticher import create_node_query, delete_node_query, create_relationship_query, \
+from TestGraphGenerator.DbTranformations.QuerySticher import create_node_query, delete_node_query, create_relationship_query, \
     delete_relationship_query
 
 

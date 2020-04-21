@@ -1,6 +1,6 @@
 import pytest
 
-from TestGraphGenerator.DbTranformations.DbSaver import node_json, relationship_json, graph_json
+from TestGraphGenerator.DbTranformations.DbSaver import export_node_json, export_relationship_json, export_graph_json
 from TestGraphGenerator.Models import Node, Relationship
 from TestGraphGenerator.Models.Graph import Graph
 
@@ -19,7 +19,7 @@ def test_node_json(test_node):
     # Arrange
     expected = {"node_type": "TestType", "properties": {"node_id": "1"}}
     # Act
-    result = node_json(test_node)
+    result = export_node_json(test_node)
     # Assert
     assert result == expected
 
@@ -28,7 +28,7 @@ def test_relationship_json(test_relationship):
     # Arrange
     expected = {"node_a": "1", "relationship_type": "Rel", "node_b": "2"}
     # Act
-    result = relationship_json(test_relationship)
+    result = export_relationship_json(test_relationship)
     # Assert
     assert result == expected
 
@@ -47,6 +47,6 @@ def test_graph_json(test_relationship, test_node):
     }
     # Act
     test_graph = Graph([test_node], [test_relationship])
-    result = graph_json(test_graph)
+    result = export_graph_json(test_graph)
     # Assert
     assert result == expected

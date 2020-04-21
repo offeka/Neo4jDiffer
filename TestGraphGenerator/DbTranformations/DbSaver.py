@@ -5,7 +5,7 @@ from TestGraphGenerator.Models.Database import Database
 from TestGraphGenerator.Models.Graph import Graph
 
 
-def node_json(node: Node) -> Dict:
+def export_node_json(node: Node) -> Dict:
     """
     Converts a node to json for serialization
     :param node: the node to convert
@@ -14,7 +14,7 @@ def node_json(node: Node) -> Dict:
     return {"node_type": node.node_type, "properties": node.properties}
 
 
-def relationship_json(rel: Relationship) -> Dict:
+def export_relationship_json(rel: Relationship) -> Dict:
     """
     Converts a relationship to json using the nodes ids
     :param rel: the relationship to convert
@@ -23,17 +23,17 @@ def relationship_json(rel: Relationship) -> Dict:
     return {"node_a": rel.node_a.node_id, "relationship_type": rel.relationship_type, "node_b": rel.node_b.node_id}
 
 
-def graph_json(graph: Graph) -> Dict:
+def export_graph_json(graph: Graph) -> Dict:
     """
     Converts a graph to json
     :param graph: the graph to serialize
     :return: a dict representing the graph
     """
-    return {"nodes": [node_json(node) for node in graph.nodes],
-            "relationships": [relationship_json(rel) for rel in graph.relationships]}
+    return {"nodes": [export_node_json(node) for node in graph.nodes],
+            "relationships": [export_relationship_json(rel) for rel in graph.relationships]}
 
 
-def database_json(database: Database) -> Dict:
+def export_database_json(database: Database) -> Dict:
     """
     Converts a database to json for saving and loading.
     This is not a replacement for neo4j dump feature this is used in context of a single db.
@@ -41,4 +41,4 @@ def database_json(database: Database) -> Dict:
     :param database:
     :return: a dict representing the database
     """
-    return {"name": database.name, "graph": graph_json(database.graph)}
+    return {"name": database.name, "graph": export_graph_json(database.graph)}
