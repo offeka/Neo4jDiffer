@@ -16,7 +16,10 @@ class Node:
     def __post_init__(self, given_id):
         if not self.properties:
             self.properties = {}
-        self.node_id = given_id
+        try:
+            self.node_id = self.properties["node_id"]
+        except KeyError:
+            self.node_id = given_id
 
     def __getitem__(self, item):
         return self.properties[item]

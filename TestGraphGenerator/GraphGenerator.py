@@ -28,6 +28,3 @@ def load_names_data_set(path: AnyStr) -> Optional[List]:
     except IOError:
         return None
     return data_json['names']
-
-
-

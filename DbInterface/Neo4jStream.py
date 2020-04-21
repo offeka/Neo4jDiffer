@@ -3,7 +3,7 @@ from typing import AnyStr
 from neo4j import GraphDatabase
 
 
-class Neo4jWriter:
+class Neo4jStream:
     def __init__(self, address: AnyStr, username: AnyStr, password: AnyStr, encrypted: bool = False):
         self._address = address
         self._username = username
@@ -22,3 +22,6 @@ class Neo4jWriter:
 
     def write(self, query: AnyStr) -> None:
         self._session.run(query)
+
+    def read(self, query: AnyStr):
+        return self._session.run(query)
