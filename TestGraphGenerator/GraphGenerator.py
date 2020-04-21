@@ -1,11 +1,8 @@
-from typing import List, AnyStr, Iterable, Optional
-
-from DbInterface.Neo4jWriter import Neo4jWriter
-from Config import GlobalSettings
 import json
+from typing import List, AnyStr, Optional
 
+from Config import GlobalSettings
 from TestGraphGenerator.Models import Node
-from TestGraphGenerator.QuerySticher import create_node_query, delete_node_query
 
 
 def create_graph_map(path: AnyStr):

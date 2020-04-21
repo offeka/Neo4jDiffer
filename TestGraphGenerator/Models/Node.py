@@ -1,6 +1,6 @@
-from dataclasses import dataclass, field, InitVar
-from typing import Dict, AnyStr, Union
 import uuid
+from dataclasses import dataclass, InitVar
+from typing import Dict, AnyStr, Union
 
 
 @dataclass

@@ -1,4 +1,4 @@
-from typing import AnyStr, Tuple, Dict, Optional, Iterable
+from typing import AnyStr, Dict, Optional, Iterable
 
 from DbInterface.Neo4jWriter import Neo4jWriter
 from TestGraphGenerator.Models import Node, Relationship, relationship_query
@@ -36,14 +36,13 @@ def flush_relationships_to_graph(relationships: Iterable[Relationship], writer: 
         writer.write(relationship_query(relationship))
 
 
-def load_node(node_raw: Tuple[AnyStr, Dict]) -> Node:
+def load_node(node_raw: Dict) -> Node:
     """
     Loads a node from raw json
     :param node_raw: the json to load from
     :return: the node object
     """
-    node_id, node_data = node_raw
-    return Node(node_data["node_type"], node_data["properties"], node_id)
+    return Node(node_raw["node_type"], node_raw["properties"], node_raw["properties"]["node_id"])
 
 
 def load_relationship(relationship_raw: Dict, nodes: Dict[AnyStr, Node]) -> Relationship:
@@ -65,7 +64,7 @@ def load_graph(graph_raw: Dict) -> Optional[Graph]:
     """
     try:
         graph = Graph()
-        graph.nodes = [load_node(node_raw) for node_raw in graph_raw["nodes"].items()]
+        graph.nodes = [load_node(node_raw) for node_raw in graph_raw["nodes"]]
         nodes_by_ids = {node.node_id: node for node in graph.nodes}
         graph.relationships = [load_relationship(rel_raw, nodes_by_ids) for rel_raw in graph_raw["relationships"]]
         return graph
