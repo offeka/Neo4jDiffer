@@ -10,6 +10,16 @@ from TestGraphGenerator.Models.Graph import Graph
 from TestGraphGenerator.DbTranformations.QuerySticher import create_node_query, create_relationship_query
 
 
+def delete_database_neo4j(stream: Neo4jStream):
+    """
+    Deletes a neo4j database
+    WARNING! THIS WILL DELETE THE DATABASE IN NEO4J PERMANENTLY
+    :param stream:
+    :return:
+    """
+    stream.write("MATCH (n) DETACH DELETE n")
+
+
 def import_neo4j_database(stream: Neo4jStream, name: AnyStr) -> Database:
     """
     Loads a graph from neo4j as a python object
@@ -112,7 +122,8 @@ def import_graph_json(graph_raw: Dict) -> Optional[Graph]:
         graph = Graph()
         graph.nodes = [import_node_json(node_raw) for node_raw in graph_raw["nodes"]]
         nodes_by_ids = {node.node_id: node for node in graph.nodes}
-        graph.relationships = [import_relationship_json(rel_raw, nodes_by_ids) for rel_raw in graph_raw["relationships"]]
+        graph.relationships = [import_relationship_json(rel_raw, nodes_by_ids) for rel_raw in
+                               graph_raw["relationships"]]
         return graph
     except KeyError as e:
         raise ValueError(f"Failed loading graph with error {e}")
