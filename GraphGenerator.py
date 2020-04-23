@@ -47,7 +47,7 @@ def generation_command(args) -> None:
     """
     with open(args.output_file, "w+") as output:
         names = load_names_data_set(args.names)
-        database = create_graph_map(names, args.connection_chace)
+        database = create_graph_map(names, args.connection_chance)
         database_json = export_database_json(database)
         json.dump(database_json, output)
 
