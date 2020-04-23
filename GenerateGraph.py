@@ -15,7 +15,10 @@ def load_names_data_set(path: AnyStr) -> List[AnyStr]:
     :return: A list of names if the file is readable else returns none
     """
     with open(path) as data_file:
-        data_json = json.load(data_file)
+        try:
+            data_json = json.load(data_file)
+        except json.JSONDecodeError:
+            print("Invalid names file make sure you are using the correct format and file")
     return data_json['names']
 
 
