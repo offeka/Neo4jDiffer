@@ -11,6 +11,6 @@ download the project and run python `python GraphGenerator.py --help`
 for example lets say we want to generate a graph with a high chance of connection and 
 we'll run 
 
-`python GraphGenerator.py generate -n PATH_TO_NAMES_FILE -o OUTPUT_FILE -c 10`
+`python GraphGenerator.py -n PATH_TO_NAMES_FILE -o OUTPUT_FILE -c 10`
 
 more info can be found in the cli help option
