@@ -19,7 +19,7 @@ def delete_node_query(node: Node) -> AnyStr:
     :param node: the node to delete
     :return: the query string for deleting the node
     """
-    return f"MATCH {node_query(node, 'n')} DELETE n"
+    return f"MATCH {node_query(node, 'n')} DETACH DELETE n"
 
 
 def create_relationship_query(rel: Relationship) -> AnyStr:
@@ -37,5 +37,5 @@ def delete_relationship_query(rel: Relationship) -> AnyStr:
     :param rel: the relationship to delete
     :return: the query string for deleting the relationship
     """
-    return f"MATCH {relationship_nodes_query(rel)} {relationship_query(rel)} DELETE r"
+    return f"MATCH ({node_query(rel.node_a, 'a')})-[r:{rel.relationship_type}]-({node_query(rel.node_b, 'b')}) DELETE r"
 

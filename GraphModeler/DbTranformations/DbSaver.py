@@ -1,5 +1,7 @@
 from typing import Dict, Iterable
 
+from tqdm import tqdm
+
 from DbInterface import Neo4jStream
 from GraphModeler.DbTranformations.QuerySticher import create_node_query, create_relationship_query
 
@@ -63,7 +65,7 @@ def export_nodes_to_graph(nodes: Iterable[Node], stream: Neo4jStream) -> None:
     :param nodes: the nodes to create in the db
     :param stream: a neo4j interface to send queries to
     """
-    for node in nodes:
+    for node in tqdm(nodes, "nodes sent to neo4j"):
         stream.write(create_node_query(node))
 
 
@@ -73,7 +75,7 @@ def export_relationships_to_graph(relationships: Iterable[Relationship], stream:
     :param relationships: the relationships to create in the db
     :param stream: a neo4j interface to send queries to
     """
-    for relationship in relationships:
+    for relationship in tqdm(relationships, "relationships sent to neo4j"):
         stream.write(create_relationship_query(relationship))
 
 
