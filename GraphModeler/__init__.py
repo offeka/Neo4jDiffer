@@ -1,2 +1,2 @@
-from .DbTranformations.DatabaseGenerator import create_graph_map
-from .DbTranformations.DbSaver import export_database_json, export_database_neo4j
+from GraphModeler.DbTranformations.DatabaseGenerator import create_graph_map
+from GraphModeler.DbTranformations.DbSaver import export_database_json, export_database_neo4j

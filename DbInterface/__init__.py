@@ -1,1 +1,1 @@
-from .Neo4jStream import Neo4jStream
+from DbInterface.Neo4jStream import Neo4jStream
