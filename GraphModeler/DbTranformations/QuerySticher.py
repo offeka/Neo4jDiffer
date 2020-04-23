@@ -1,7 +1,8 @@
 from typing import AnyStr
 
 from GraphModeler.Models import Node, Relationship
-from GraphModeler.Models.QueryConverter import node_query, relationship_nodes_query, relationship_query
+from GraphModeler.Models.QueryConverter import node_query, relationship_nodes_query, relationship_query, \
+    generate_properties
 
 
 def create_node_query(node: Node) -> AnyStr:
@@ -37,5 +38,5 @@ def delete_relationship_query(rel: Relationship) -> AnyStr:
     :param rel: the relationship to delete
     :return: the query string for deleting the relationship
     """
-    return f"MATCH ({node_query(rel.node_a, 'a')})-[r:{rel.relationship_type}]-({node_query(rel.node_b, 'b')}) DELETE r"
+    return f"MATCH ({node_query(rel.node_a, 'a')})-[r:{rel.relationship_type} {generate_properties(rel)}]-({node_query(rel.node_b, 'b')}) DELETE r"
 

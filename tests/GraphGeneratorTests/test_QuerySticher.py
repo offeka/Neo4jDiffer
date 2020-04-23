@@ -14,7 +14,7 @@ def test_node() -> Node:
 def test_relationship() -> Relationship:
     return Relationship(Node("TestTypeA", {"prop1": "value1"}, "1"),
                         "Knows",
-                        Node("TestTypeB", {"prop2": "value2"}, "2"))
+                        Node("TestTypeB", {"prop2": "value2"}, "2"), {"rel_prop": "value1"})
 
 
 def test_create_node_query_sanity(test_node):
@@ -28,7 +28,7 @@ def test_create_node_query_sanity(test_node):
 
 def test_delete_node_query_sanity(test_node):
     # Arrange
-    expected = "MATCH (n:TestType {prop1: 'value1', node_id: '1'}) DELETE n"
+    expected = "MATCH (n:TestType {prop1: 'value1', node_id: '1'}) DETACH DELETE n"
     # Act
     result = delete_node_query(test_node)
     # Assert
@@ -39,7 +39,7 @@ def test_create_relationship_query_sanity(test_relationship):
     # Arrange
     expected = "MATCH (nodeA:TestTypeA {prop1: 'value1', node_id: '1'}), " \
                "(nodeB:TestTypeB {prop2: 'value2', node_id: '2'}) " \
-               "MERGE (nodeA)-[r:Knows]-(nodeB)"
+               "MERGE (nodeA)-[r:Knows {rel_prop: 'value1'}]-(nodeB)"
     # Act
     result = create_relationship_query(test_relationship)
     # Assert
@@ -48,9 +48,9 @@ def test_create_relationship_query_sanity(test_relationship):
 
 def test_delete_relationship_query_sanity(test_relationship):
     # Arrange
-    expected = "MATCH (nodeA:TestTypeA {prop1: 'value1', node_id: '1'}), " \
-               "(nodeB:TestTypeB {prop2: 'value2', node_id: '2'}) " \
-               "(nodeA)-[r:Knows]-(nodeB) DELETE r"
+    expected = "MATCH ((a:TestTypeA {prop1: 'value1', node_id: '1'}))" \
+               "-[r:Knows {rel_prop: 'value1'}]-" \
+               "((b:TestTypeB {prop2: 'value2', node_id: '2'})) DELETE r"
     # Act
     result = delete_relationship_query(test_relationship)
     # Assert
