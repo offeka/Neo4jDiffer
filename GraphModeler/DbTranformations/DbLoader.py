@@ -85,4 +85,4 @@ def import_graph_json(graph_raw: Dict) -> Optional[Graph]:
                                graph_raw["relationships"]]
         return graph
     except KeyError as e:
-        raise ValueError(f"Failed loading graph with error {e}")
+        raise ValueError(f"Failed loading graph with error cannot find key {e}")

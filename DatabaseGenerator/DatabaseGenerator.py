@@ -21,6 +21,6 @@ def create_graph_map(names: List[AnyStr], connection_chance: int) -> Database:
         for i in range(random.randint(0, connection_chance)):
             selected_node = random.choice(names_nodes)
             if selected_node is not current_node:
-                new_relationship = Relationship(current_node, "KNOWS", selected_node)
+                new_relationship = Relationship(current_node, GlobalSettings.TEST_GRAPH_RELATIONSHIP, selected_node)
                 relationships.append(new_relationship)
     return Database(Graph(names_nodes, relationships), "TestDatabase")

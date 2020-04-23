@@ -20,3 +20,6 @@ class Relationship:
         return self.relationship_type == other.relationship_type \
                and self.node_a == other.node_a \
                and self.node_b == other.node_b
+
+    def __hash__(self):
+        return hash((self.relationship_type, self.node_a, self.node_b))

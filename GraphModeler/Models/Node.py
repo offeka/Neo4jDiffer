@@ -40,3 +40,6 @@ class Node:
 
     def __eq__(self, other):
         return self.node_type == other.node_type and self.properties == other.properties
+
+    def __hash__(self):
+        return hash((self.node_type, self.node_id))
