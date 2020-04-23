@@ -16,7 +16,7 @@ we'll run
 
 More info can be found in the builtin help funciton. just use `--help`
 
-#### Run a module
+#### Run as a module
 Just import the `DatabaseGenerator` module and call `create_graph_map()` with a list of names 
 from there you can use the `GraphModeler` to import or export the database.
 
@@ -35,3 +35,5 @@ this will load the database json into neo4j from the file specified.
 
 More info can be found in the builtin help funciton. just use `--help`
 
+#### Run as a module
+In order to run the manager as module you can just import the `GraphModeler` and use the imported functions.
