@@ -1,8 +1,8 @@
 import pytest
 
-from TestGraphGenerator.DbTranformations.DbLoader import import_node_json, import_relationship_json, import_graph_json
-from TestGraphGenerator.Models import Node, Relationship
-from TestGraphGenerator.Models.Graph import Graph
+from GraphModeler.DbTranformations.DbLoader import import_node_json, import_relationship_json, import_graph_json
+from GraphModeler.Models import Node, Relationship
+from GraphModeler.Models.Graph import Graph
 
 
 @pytest.fixture

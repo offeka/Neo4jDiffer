@@ -1,6 +1,6 @@
 from typing import AnyStr
 
-from TestGraphGenerator.Models import Node, Relationship
+from GraphModeler.Models import Node, Relationship
 
 
 def relationship_query(rel: Relationship, node_names: tuple = ("nodeA", "nodeB"),

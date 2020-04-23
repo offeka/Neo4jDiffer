@@ -1,7 +1,7 @@
 import pytest
 
-from TestGraphGenerator.Models import Relationship, Node
-from TestGraphGenerator.Models.QueryConverter import relationship_query, relationship_nodes_query, node_query
+from GraphModeler.Models import Relationship, Node
+from GraphModeler.Models.QueryConverter import relationship_query, relationship_nodes_query, node_query
 
 
 @pytest.fixture()

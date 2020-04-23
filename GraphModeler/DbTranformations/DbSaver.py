@@ -1,8 +1,8 @@
 from typing import Dict
 
-from TestGraphGenerator.Models import Node, Relationship
-from TestGraphGenerator.Models.Database import Database
-from TestGraphGenerator.Models.Graph import Graph
+from GraphModeler.Models import Node, Relationship
+from GraphModeler.Models.Database import Database
+from GraphModeler.Models.Graph import Graph
 
 
 def export_node_json(node: Node) -> Dict:

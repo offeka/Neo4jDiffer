@@ -1,8 +1,8 @@
 import pytest
 
-from TestGraphGenerator.DbTranformations.DbSaver import export_node_json, export_relationship_json, export_graph_json
-from TestGraphGenerator.Models import Node, Relationship
-from TestGraphGenerator.Models.Graph import Graph
+from GraphModeler.DbTranformations.DbSaver import export_node_json, export_relationship_json, export_graph_json
+from GraphModeler.Models import Node, Relationship
+from GraphModeler.Models.Graph import Graph
 
 
 @pytest.fixture()

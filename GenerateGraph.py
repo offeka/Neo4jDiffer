@@ -3,9 +3,9 @@ import json
 from typing import AnyStr, List
 
 from DbInterface import Neo4jStream
-from TestGraphGenerator import export_database_neo4j, create_graph_map, export_database_json
-from TestGraphGenerator.DbTranformations import import_database_json
-from TestGraphGenerator.DbTranformations.DbLoader import delete_database_neo4j
+from GraphModeler import export_database_neo4j, create_graph_map, export_database_json
+from GraphModeler.DbTranformations import import_database_json
+from GraphModeler.DbTranformations.DbLoader import delete_database_neo4j
 
 
 def load_names_data_set(path: AnyStr) -> List[AnyStr]:

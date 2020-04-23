@@ -2,9 +2,9 @@ import random
 from typing import List, AnyStr
 
 from Config import GlobalSettings
-from TestGraphGenerator.Models import Node, Relationship
-from TestGraphGenerator.Models.Database import Database
-from TestGraphGenerator.Models.Graph import Graph
+from GraphModeler.Models import Node, Relationship
+from GraphModeler.Models.Database import Database
+from GraphModeler.Models.Graph import Graph
 
 
 def create_graph_map(names: List[AnyStr]) -> Database:

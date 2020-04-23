@@ -4,10 +4,10 @@ from typing import AnyStr, Dict, Optional, Iterable, List
 import neo4j
 
 from DbInterface.Neo4jStream import Neo4jStream
-from TestGraphGenerator.Models import Node, Relationship
-from TestGraphGenerator.Models.Database import Database
-from TestGraphGenerator.Models.Graph import Graph
-from TestGraphGenerator.DbTranformations.QuerySticher import create_node_query, create_relationship_query
+from GraphModeler.Models import Node, Relationship
+from GraphModeler.Models.Database import Database
+from GraphModeler.Models.Graph import Graph
+from GraphModeler.DbTranformations.QuerySticher import create_node_query, create_relationship_query
 
 
 def delete_database_neo4j(stream: Neo4jStream):

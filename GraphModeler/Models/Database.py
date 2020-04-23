@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import AnyStr
 
-from TestGraphGenerator.Models.Graph import Graph
+from GraphModeler.Models.Graph import Graph
 
 
 @dataclass

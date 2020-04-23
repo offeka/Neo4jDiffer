@@ -1,7 +1,7 @@
 from typing import List
 from dataclasses import dataclass, field
 
-from TestGraphGenerator.Models import Node, Relationship
+from GraphModeler.Models import Node, Relationship
 
 
 @dataclass
