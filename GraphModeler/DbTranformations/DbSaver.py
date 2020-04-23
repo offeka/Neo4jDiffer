@@ -16,7 +16,7 @@ def export_node_json(node: Node) -> Dict:
     :param node: the node to convert
     :return: a dict representing the node
     """
-    return {"node_type": node.node_type, "properties": node.properties}
+    return {"node_types": node.node_types, "properties": node.properties}
 
 
 def export_relationship_json(rel: Relationship) -> Dict:
@@ -25,7 +25,8 @@ def export_relationship_json(rel: Relationship) -> Dict:
     :param rel: the relationship to convert
     :return: a dict representing the relationship
     """
-    return {"node_a": rel.node_a.node_id, "relationship_type": rel.relationship_type, "node_b": rel.node_b.node_id}
+    return {"node_a": rel.node_a.node_id, "relationship_type": rel.relationship_type, "node_b": rel.node_b.node_id,
+            "properties": rel.properties}
 
 
 def export_graph_json(graph: Graph) -> Dict:

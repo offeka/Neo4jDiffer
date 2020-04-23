@@ -16,10 +16,19 @@ def import_neo4j_database(stream: Neo4jStream, name: AnyStr) -> Database:
     :param name: the name of the database
     :return: the database object
     """
-    nodes = [Node(result.labels[0], result.items()) for result in stream.read("MATCH (n) RETURN n")]
+    nodes = [import_node_neo4j(result) for result in stream.read("MATCH (n) RETURN n")]
     nodes_by_ids = {node.node_id: node for node in nodes}
     relationships = import_relationships_neo4j(stream, nodes_by_ids)
     return Database(Graph(nodes, relationships), name)
+
+
+def import_node_neo4j(result: neo4j.Record) -> Node:
+    """
+    Takes a neo4j result and converts it to a use able node object
+    :param result: the neo4j result
+    :return: the node created from the result
+    """
+    return Node(list(result[0].labels), {key: value for key, value in result[0].items()})
 
 
 def import_relationships_neo4j(stream: Neo4jStream, nodes_by_id: Dict[AnyStr, Node]) -> List[Relationship]:
@@ -37,7 +46,8 @@ def import_relationships_neo4j(stream: Neo4jStream, nodes_by_id: Dict[AnyStr, No
     for relationship in relationships_raw:
         node_a, node_b = relationship.nodes
         new_relationship = Relationship(nodes_by_id[node_a["node_id"]], str(relationship.type),
-                                        nodes_by_id[node_b["node_id"]])
+                                        nodes_by_id[node_b["node_id"]],
+                                        {key: value for key, value in relationship.items()})
         relationships.append(new_relationship)
     return relationships
 
@@ -57,7 +67,7 @@ def import_node_json(node_raw: Dict) -> Node:
     :param node_raw: the json to load from
     :return: the node object
     """
-    return Node(node_raw["node_type"], node_raw["properties"])
+    return Node(node_raw["node_types"], node_raw["properties"])
 
 
 def import_relationship_json(relationship_raw: Dict, nodes: Dict[AnyStr, Node]) -> Relationship:
@@ -68,7 +78,7 @@ def import_relationship_json(relationship_raw: Dict, nodes: Dict[AnyStr, Node]) 
     :return: the relationship object
     """
     return Relationship(nodes[relationship_raw["node_a"]], relationship_raw["relationship_type"],
-                        nodes[relationship_raw["node_b"]])
+                        nodes[relationship_raw["node_b"]], relationship_raw["properties"])
 
 
 def import_graph_json(graph_raw: Dict) -> Optional[Graph]:
