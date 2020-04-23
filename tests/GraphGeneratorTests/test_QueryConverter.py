@@ -8,12 +8,12 @@ from GraphModeler.Models.QueryConverter import relationship_query, relationship_
 def test_relationship():
     return Relationship(Node("TestTypeA", {"prop1": "value1"}, "1"),
                         "Test",
-                        Node("TestTypeB", {"prop2": "value2"}, "2"))
+                        Node("TestTypeB", {"prop2": "value2"}, "2"), {"rel_prop": "value1"})
 
 
 def test_relationship_query_sanity(test_relationship):
     # Arrange
-    expected = "(nodeA)-[r:Test]-(nodeB)"
+    expected = "(nodeA)-[r:Test {rel_prop: 'value1'}]-(nodeB)"
     # Act
     result = relationship_query(test_relationship)
     # Assert
