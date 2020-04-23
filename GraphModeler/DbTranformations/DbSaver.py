@@ -75,3 +75,13 @@ def export_relationships_to_graph(relationships: Iterable[Relationship], stream:
     """
     for relationship in relationships:
         stream.write(create_relationship_query(relationship))
+
+
+def delete_database_neo4j(stream: Neo4jStream):
+    """
+    Deletes a neo4j database
+    WARNING! THIS WILL DELETE THE DATABASE IN NEO4J PERMANENTLY
+    :param stream:
+    :return:
+    """
+    stream.write("MATCH (n) DETACH DELETE n")

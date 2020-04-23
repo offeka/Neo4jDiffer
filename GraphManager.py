@@ -4,7 +4,7 @@ import json
 from DbInterface import Neo4jStream
 from GraphModeler import export_database_neo4j
 from GraphModeler.DbTranformations import import_database_json
-from GraphModeler.DbTranformations.DbLoader import delete_database_neo4j
+from GraphModeler.DbTranformations.DbSaver import delete_database_neo4j
 
 
 def create_arg_parser() -> argparse.ArgumentParser:
