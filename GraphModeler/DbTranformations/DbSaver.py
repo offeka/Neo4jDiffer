@@ -1,7 +1,7 @@
 from typing import Dict, Iterable
 
 from DbInterface import Neo4jStream
-from TestGraphGenerator.DbTranformations.QuerySticher import create_node_query, create_relationship_query
+from GraphModeler.DbTranformations.QuerySticher import create_node_query, create_relationship_query
 
 from GraphModeler.Models import Node, Relationship
 from GraphModeler.Models.Database import Database
