@@ -37,3 +37,13 @@ def test_node_query_sanity():
     result = node_query(test_node)
     # Assert
     assert result == expected
+
+
+def test_multi_label_node():
+    # Arrange
+    expected = "(n:TestTypeA:TestTypeB {prop1: 'value1', node_id: '1'})"
+    test_node = Node(["TestTypeA", "TestTypeB"], {"prop1": "value1"}, "1")
+    # Act
+    result = node_query(test_node)
+    # Assert
+    assert result == expected

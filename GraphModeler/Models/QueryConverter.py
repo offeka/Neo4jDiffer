@@ -52,4 +52,5 @@ def node_query(node: Node, node_name="n") -> AnyStr:
     :param node_name: the name of the node in the query. useful for multi query strings
     :return: a string of the query
     """
-    return f"({node_name}:{node.node_type} {generate_properties(node)})"
+    return f"({node_name}:{':'.join(node.node_types)} {generate_properties(node)})"
+

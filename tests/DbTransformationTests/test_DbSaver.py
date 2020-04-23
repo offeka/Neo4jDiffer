@@ -17,7 +17,7 @@ def test_relationship() -> Relationship:
 
 def test_node_json(test_node):
     # Arrange
-    expected = {"node_type": "TestType", "properties": {"node_id": "1"}}
+    expected = {"node_type": ["TestType"], "properties": {"node_id": "1"}}
     # Act
     result = export_node_json(test_node)
     # Assert
@@ -38,7 +38,7 @@ def test_graph_json(test_relationship, test_node):
     expected = {
         "nodes":
             [
-                {"node_type": "TestType", "properties": {"node_id": "1"}}
+                {"node_type": ["TestType"], "properties": {"node_id": "1"}}
             ],
         "relationships":
             [
