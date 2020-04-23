@@ -1,4 +1,7 @@
-from typing import Dict
+from typing import Dict, Iterable
+
+from DbInterface import Neo4jStream
+from TestGraphGenerator.DbTranformations.QuerySticher import create_node_query, create_relationship_query
 
 from GraphModeler.Models import Node, Relationship
 from GraphModeler.Models.Database import Database
@@ -42,3 +45,33 @@ def export_database_json(database: Database) -> Dict:
     :return: a dict representing the database
     """
     return {"name": database.name, "graph": export_graph_json(database.graph)}
+
+
+def export_database_neo4j(database: Database, stream: Neo4jStream) -> None:
+    """
+    Loads a database from an object into neo4j
+    :param database: the database to load
+    :param stream: the neo4j interface to use
+    """
+    export_nodes_to_graph(database.graph.nodes, stream)
+    export_relationships_to_graph(database.graph.relationships, stream)
+
+
+def export_nodes_to_graph(nodes: Iterable[Node], stream: Neo4jStream) -> None:
+    """
+    Creates a list of nodes in the neo4j graph.
+    :param nodes: the nodes to create in the db
+    :param stream: a neo4j interface to send queries to
+    """
+    for node in nodes:
+        stream.write(create_node_query(node))
+
+
+def export_relationships_to_graph(relationships: Iterable[Relationship], stream: Neo4jStream) -> None:
+    """
+    Writes relationships to the neo4j database.
+    :param relationships: the relationships to create in the db
+    :param stream: a neo4j interface to send queries to
+    """
+    for relationship in relationships:
+        stream.write(create_relationship_query(relationship))
