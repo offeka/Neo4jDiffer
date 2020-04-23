@@ -37,3 +37,12 @@ More info can be found in the builtin help funciton. just use `--help`
 
 #### Run as a module
 In order to run the manager as module you can just import the `GraphModeler` and use the imported functions.
+
+Example usage:
+```python
+def load_into_neo4j():
+  with open(args.database) as db_file:
+      db_json = json.load(db_file)
+  database = import_database_json(db_json)
+  export_database_neo4j(database, stream)
+```
