@@ -1,4 +1,4 @@
-import random
+from random import random
 from typing import List, AnyStr
 
 from Config import GlobalSettings

@@ -1,5 +1,5 @@
 from itertools import chain
-from typing import AnyStr, Dict, Optional, Iterable, List
+from typing import AnyStr, Dict, Optional, List
 
 import neo4j
 
@@ -7,17 +7,6 @@ from DbInterface.Neo4jStream import Neo4jStream
 from GraphModeler.Models import Node, Relationship
 from GraphModeler.Models.Database import Database
 from GraphModeler.Models.Graph import Graph
-from GraphModeler.DbTranformations.QuerySticher import create_node_query, create_relationship_query
-
-
-def delete_database_neo4j(stream: Neo4jStream):
-    """
-    Deletes a neo4j database
-    WARNING! THIS WILL DELETE THE DATABASE IN NEO4J PERMANENTLY
-    :param stream:
-    :return:
-    """
-    stream.write("MATCH (n) DETACH DELETE n")
 
 
 def import_neo4j_database(stream: Neo4jStream, name: AnyStr) -> Database:
@@ -29,11 +18,11 @@ def import_neo4j_database(stream: Neo4jStream, name: AnyStr) -> Database:
     """
     nodes = [Node(result.labels[0], result.items()) for result in stream.read("MATCH (n) RETURN n")]
     nodes_by_ids = {node.node_id: node for node in nodes}
-    relationships = export_relationships_neo4j(stream, nodes_by_ids)
+    relationships = import_relationships_neo4j(stream, nodes_by_ids)
     return Database(Graph(nodes, relationships), name)
 
 
-def export_relationships_neo4j(stream: Neo4jStream, nodes_by_id: Dict[AnyStr, Node]) -> List[Relationship]:
+def import_relationships_neo4j(stream: Neo4jStream, nodes_by_id: Dict[AnyStr, Node]) -> List[Relationship]:
     """
     Loads all relationships from a neo4j result
     :param stream: the neo4j stream to load the relationships from
@@ -60,36 +49,6 @@ def import_database_json(database_raw: Dict) -> Database:
     :return: the database object
     """
     return Database(import_graph_json(database_raw["graph"]), database_raw["name"])
-
-
-def export_database_neo4j(database: Database, stream: Neo4jStream) -> None:
-    """
-    Loads a database from an object into neo4j
-    :param database: the database to load
-    :param stream: the neo4j interface to use
-    """
-    export_nodes_to_graph(database.graph.nodes, stream)
-    export_relationships_to_graph(database.graph.relationships, stream)
-
-
-def export_nodes_to_graph(nodes: Iterable[Node], stream: Neo4jStream) -> None:
-    """
-    Creates a list of nodes in the neo4j graph.
-    :param nodes: the nodes to create in the db
-    :param stream: a neo4j interface to send queries to
-    """
-    for node in nodes:
-        stream.write(create_node_query(node))
-
-
-def export_relationships_to_graph(relationships: Iterable[Relationship], stream: Neo4jStream) -> None:
-    """
-    Writes relationships to the neo4j database.
-    :param relationships: the relationships to create in the db
-    :param stream: a neo4j interface to send queries to
-    """
-    for relationship in relationships:
-        stream.write(create_relationship_query(relationship))
 
 
 def import_node_json(node_raw: Dict) -> Node:

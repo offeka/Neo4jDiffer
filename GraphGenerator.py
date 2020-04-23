@@ -2,10 +2,8 @@ import argparse
 import json
 from typing import AnyStr, List
 
-from DbInterface import Neo4jStream
-from GraphModeler import export_database_neo4j, create_graph_map, export_database_json
-from GraphModeler.DbTranformations import import_database_json
-from GraphModeler.DbTranformations.DbLoader import delete_database_neo4j
+from DatabaseGenerator.DatabaseGenerator import create_graph_map
+from GraphModeler import export_database_json
 
 
 def load_names_data_set(path: AnyStr) -> List[AnyStr]:
@@ -27,9 +25,7 @@ def create_arg_parser() -> argparse.ArgumentParser:
     Creates an arg parser for the script for ease of use as a cli
     :return: the arg parser
     """
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(help="generate graphs")
-    generate_parser = subparsers.add_parser("generate", help="generates a graph from a random names database")
+    generate_parser = argparse.ArgumentParser()
     generate_parser.add_argument("--names", "-n",
                                  help="the path to the file containing the names for the randomly generated nodes")
     generate_parser.add_argument("--output_file", "-o",
@@ -40,30 +36,8 @@ def create_arg_parser() -> argparse.ArgumentParser:
                                  default=5,
                                  type=int)
     generate_parser.set_defaults(func=generation_command)
-    neo4j_parser = subparsers.add_parser("neo4j", help="manages database and neo4j bridging")
-    neo4j_parser.add_argument("--mode", "-m", choices=["load", "delete"], help="the mode of usage")
-    neo4j_parser.add_argument("--username", "-u", help="the neo4j server username")
-    neo4j_parser.add_argument("--password", "-p", help="the neo4j server password")
-    neo4j_parser.add_argument("--address", "-a", help="the neo4j server address")
-    neo4j_parser.add_argument("--database", "-d", help="a database file to load into neo4j", required=False)
-    neo4j_parser.set_defaults(func=neo4j_command)
 
-    return parser
-
-
-def neo4j_command(args) -> None:
-    """
-    Handles the neo4j side of the cli
-    :param args: the args from the command line
-    """
-    with Neo4jStream(args.address, args.username, args.password) as stream:
-        if args.mode == "load":
-            with open(args.database) as db_file:
-                db_json = json.load(db_file)
-            database = import_database_json(db_json)
-            export_database_neo4j(database, stream)
-        elif args.mode == "delete":
-            delete_database_neo4j(stream)
+    return generate_parser
 
 
 def generation_command(args) -> None:
