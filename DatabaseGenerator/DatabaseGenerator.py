@@ -18,7 +18,7 @@ def create_graph_map(names: List[AnyStr], connection_chance: int) -> Database:
     relationships = []
     names_nodes = [Node(GlobalSettings.TEST_GRAPH_TYPE, properties={"name": name}) for name in names]
     for current_node in names_nodes:
-        for i in range(random.randint(connection_chance)):
+        for i in range(random.randint(0, connection_chance)):
             selected_node = random.choice(names_nodes)
             if selected_node is not current_node:
                 new_relationship = Relationship(current_node, "KNOWS", selected_node)
