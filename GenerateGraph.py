@@ -32,19 +32,23 @@ def create_arg_parser() -> argparse.ArgumentParser:
     generate_parser.add_argument("--output_file", "-o",
                                  help="output file path will output the database as a json",
                                  default="graph.json")
-    generate_parser.set_defaults(func=handle_generating)
+    generate_parser.add_argument("--connection_chance", "-c",
+                                 help="the chance for a node to connect to another one, higher is a bigger chance",
+                                 default=5,
+                                 type=int)
+    generate_parser.set_defaults(func=generation_command)
     neo4j_parser = subparsers.add_parser("neo4j", help="manages database and neo4j bridging")
     neo4j_parser.add_argument("--mode", "-m", choices=["load", "delete"], help="the mode of usage")
     neo4j_parser.add_argument("--username", "-u", help="the neo4j server username")
     neo4j_parser.add_argument("--password", "-p", help="the neo4j server password")
     neo4j_parser.add_argument("--address", "-a", help="the neo4j server address")
-    neo4j_parser.add_argument("--database", "--db", help="a database file to load into neo4j", required=False)
-    neo4j_parser.set_defaults(func=handle_neo4j)
+    neo4j_parser.add_argument("--database", "-d", help="a database file to load into neo4j", required=False)
+    neo4j_parser.set_defaults(func=neo4j_command)
 
     return parser
 
 
-def handle_neo4j(args) -> None:
+def neo4j_command(args) -> None:
     """
     Handles the neo4j side of the cli
     :param args: the args from the command line
@@ -59,14 +63,14 @@ def handle_neo4j(args) -> None:
             delete_database_neo4j(stream)
 
 
-def handle_generating(args) -> None:
+def generation_command(args) -> None:
     """
     Handles generating databases from the cli
     :param args: the args from the command line
     """
     with open(args.output_file, "w+") as output:
         names = load_names_data_set(args.names)
-        database = create_graph_map(names)
+        database = create_graph_map(names, args.connection_chace)
         database_json = export_database_json(database)
         json.dump(database_json, output)
 
