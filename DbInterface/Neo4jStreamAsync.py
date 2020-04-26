@@ -5,11 +5,9 @@ from typing import AnyStr
 
 from neo4j import GraphDatabase
 
-LOOP = asyncio.get_running_loop()
-
 
 class Neo4jStreamAsync:
-    def __init__(self, address: AnyStr, username: AnyStr, password: AnyStr, encrypted: bool = False,
+    def __init__(self, address: AnyStr, username: AnyStr, password: AnyStr, loop, encrypted: bool = False,
                  max_workers: int = 30):
         """
         Neo4j async interface as a stream
@@ -24,16 +22,18 @@ class Neo4jStreamAsync:
         self._password = password
         self._encrypted = encrypted
         self._executor = futures.ThreadPoolExecutor(max_workers=max_workers)
+        self._loop = loop
         self._driver = None
 
     def connect(self):
         self._driver = GraphDatabase.driver(self._address, auth=(self._username, self._password),
                                             encrypted=self._encrypted)
 
-    def __aenter__(self):
+    async def __aenter__(self):
         self.connect()
+        return self
 
-    def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
     @asynccontextmanager
@@ -43,13 +43,14 @@ class Neo4jStreamAsync:
             def connect():
                 return self._driver.session()
 
-            session = await LOOP.run_in_executor(self._executor, connect)
+            session = await self._loop.run_in_executor(self._executor, connect)
+            yield session
         finally:
             def disconnect():
                 session.close()
 
             if session:
-                await LOOP.run_in_executor(self._executor, disconnect)
+                await self._loop.run_in_executor(self._executor, disconnect)
 
     def close(self):
         self._driver.close()
@@ -61,11 +62,11 @@ class Neo4jStreamAsync:
         :return:
         """
 
-        async with self.__session as session:
+        async with self.__session() as session:
             def run():
                 return session.run(query)
 
-            await LOOP.run_in_executor(self._executor, run)
+            await self._loop.run_in_executor(self._executor, run)
 
     async def read_async(self, query):
         """
@@ -73,10 +74,10 @@ class Neo4jStreamAsync:
         :param query: the query to run
         :return: the results iterator
         """
-        async with self.__session as session:
+        async with self.__session() as session:
             def run():
                 return session.run(query).records()
 
-            query_results = await LOOP.run_in_executor(self._executor, run)
+            query_results = await self._loop.run_in_executor(self._executor, run)
         for result in query_results:
             yield result
