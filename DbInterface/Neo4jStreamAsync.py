@@ -30,6 +30,12 @@ class Neo4jStreamAsync:
         self._driver = GraphDatabase.driver(self._address, auth=(self._username, self._password),
                                             encrypted=self._encrypted)
 
+    def __aenter__(self):
+        self.connect()
+
+    def __aexit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+
     @asynccontextmanager
     async def __session(self):
         session = None
@@ -55,7 +61,7 @@ class Neo4jStreamAsync:
         :return:
         """
 
-        with await self.__session as session:
+        async with self.__session as session:
             def run():
                 return session.run(query)
 
@@ -67,7 +73,7 @@ class Neo4jStreamAsync:
         :param query: the query to run
         :return: the results iterator
         """
-        with await self.__session as session:
+        async with self.__session as session:
             def run():
                 return session.run(query).records()
 
