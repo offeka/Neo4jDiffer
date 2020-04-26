@@ -1,8 +1,10 @@
+import asyncio
 from typing import Dict, Iterable
 
 from tqdm import tqdm
 
 from DbInterface import Neo4jStream
+from DbInterface.Neo4jStreamAsync import Neo4jStreamAsync
 from GraphModeler.DbTranformations.QuerySticher import create_node_query, create_relationship_query
 
 from GraphModeler.Models import Node, Relationship
@@ -66,8 +68,17 @@ def export_nodes_to_graph(nodes: Iterable[Node], stream: Neo4jStream) -> None:
     :param nodes: the nodes to create in the db
     :param stream: a neo4j interface to send queries to
     """
-    for node in tqdm(nodes, "nodes sent to neo4j"):
+    for node in nodes:
         stream.write(create_node_query(node))
+
+
+async def export_nodes_to_graph_async(nodes: Iterable[Node], stream: Neo4jStreamAsync) -> None:
+    """
+    Creates a list of nodes in neo4j in an async manner
+    :param nodes: the nodes to export
+    :param stream: the neo4j stream to write to
+    """
+    await asyncio.wait([stream.write_async(create_node_query(node)) for node in nodes])
 
 
 def export_relationships_to_graph(relationships: Iterable[Relationship], stream: Neo4jStream) -> None:
@@ -76,8 +87,17 @@ def export_relationships_to_graph(relationships: Iterable[Relationship], stream:
     :param relationships: the relationships to create in the db
     :param stream: a neo4j interface to send queries to
     """
-    for relationship in tqdm(relationships, "relationships sent to neo4j"):
+    for relationship in relationships:
         stream.write(create_relationship_query(relationship))
+
+
+async def export_relationships_to_graph_async(relationships: Iterable[Relationship], stream: Neo4jStreamAsync) -> None:
+    """
+    Exports relationships to neo4j graph in an async manner
+    :param relationships: the relationships to export
+    :param stream: the stream to write
+    """
+    await asyncio.wait([stream.write_async(create_relationship_query(rel)) for rel in relationships])
 
 
 def delete_database_neo4j(stream: Neo4jStream):
@@ -88,3 +108,12 @@ def delete_database_neo4j(stream: Neo4jStream):
     :return:
     """
     stream.write("MATCH (n) DETACH DELETE n")
+
+
+async def delete_database_neo4j_async(stream: Neo4jStreamAsync) -> None:
+    """
+    Deletes a neo4j database in an async manner
+    WARNING! THIS WILL DELETE THE NEO4J CONTENTS PERMANENTLY
+    :param stream: the stream to delete the database from
+    """
+    await stream.write_async("MATCH (n) DETACH DELETE n")
