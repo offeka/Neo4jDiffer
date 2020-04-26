@@ -1,5 +1,6 @@
 import asyncio
 from concurrent import futures
+from contextlib import asynccontextmanager
 from typing import AnyStr
 
 from neo4j import GraphDatabase
@@ -23,25 +24,29 @@ class Neo4jStreamAsync:
         self._password = password
         self._encrypted = encrypted
         self._executor = futures.ThreadPoolExecutor(max_workers=max_workers)
-        self._session = None
         self._driver = None
 
     def connect(self):
         self._driver = GraphDatabase.driver(self._address, auth=(self._username, self._password),
                                             encrypted=self._encrypted)
-        self._session = self._driver.session()
+
+    @asynccontextmanager
+    async def __session(self):
+        session = None
+        try:
+            def connect():
+                return self._driver.session()
+
+            session = await LOOP.run_in_executor(self._executor, connect)
+        finally:
+            def disconnect():
+                session.close()
+
+            if session:
+                await LOOP.run_in_executor(self._executor, disconnect)
 
     def close(self):
-        self._session.close()
         self._driver.close()
-
-    async def __aenter__(self):
-        await LOOP.run_in_executor(self._executor, self.connect)
-        return self
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await LOOP.run_in_executor(self._executor, self.close)
-        self._executor.shutdown()
 
     async def write_async(self, query):
         """
@@ -50,10 +55,11 @@ class Neo4jStreamAsync:
         :return:
         """
 
-        def run():
-            return self._session.run(query)
+        with await self.__session as session:
+            def run():
+                return session.run(query)
 
-        await LOOP.run_in_executor(self._executor, run)
+            await LOOP.run_in_executor(self._executor, run)
 
     async def read_async(self, query):
         """
@@ -61,10 +67,10 @@ class Neo4jStreamAsync:
         :param query: the query to run
         :return: the results iterator
         """
+        with await self.__session as session:
+            def run():
+                return session.run(query).records()
 
-        def run():
-            return self._session.run(query).records()
-
-        query_results = await LOOP.run_in_executor(self._executor, run)
+            query_results = await LOOP.run_in_executor(self._executor, run)
         for result in query_results:
             yield result
