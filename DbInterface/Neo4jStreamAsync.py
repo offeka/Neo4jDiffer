@@ -71,7 +71,6 @@ class Neo4jStreamAsync:
             transaction = None
             try:
                 transaction = Neo4jAsyncTransaction(session, self._loop, self._executor)
-                print(session)
                 await transaction.begin_transaction()
                 yield transaction
             finally:

@@ -1,13 +1,11 @@
 import argparse
 import asyncio
-import json
 import cProfile
+import json
 
-from DbInterface import Neo4jStream
 from DbInterface.Neo4jStreamAsync import Neo4jStreamAsync
 from GraphModeler import import_database_json
-from GraphModeler.DbTranformations.DbSaver import export_database_neo4j_async, delete_database_neo4j_async, \
-    export_database_neo4j, delete_database_neo4j
+from GraphModeler.DbTranformations.DbSaver import export_database_neo4j_async, delete_database_neo4j_async
 
 
 def create_arg_parser() -> argparse.ArgumentParser:
@@ -29,15 +27,6 @@ def neo4j_command(args) -> None:
     :param args: the args from the command line
     """
     asyncio.run(run_command(args))
-
-    # with Neo4jStream(args.address, args.username, args.password) as stream:
-    #     if args.mode == "load":
-    #         with open(args.database) as db_file:
-    #             db_json = json.load(db_file)
-    #         database = import_database_json(db_json)
-    #         export_database_neo4j(database, stream, args.commit_size)
-    #     elif args.mode == "delete":
-    #         delete_database_neo4j(stream)
 
 
 async def run_command(args):
