@@ -67,15 +67,16 @@ class Neo4jStreamAsync:
 
     @asynccontextmanager
     async def transaction(self):
-        transaction = None
-        try:
-            with await self.get_session() as session:
+        with await self.get_session() as session:
+            transaction = None
+            try:
                 transaction = Neo4jAsyncTransaction(session, self._loop, self._executor)
+                print(session)
                 await transaction.begin_transaction()
                 yield transaction
-        finally:
-            if transaction:
-                await transaction.commit()
+            finally:
+                if transaction:
+                    await transaction.commit()
 
 
 class Neo4jAsyncTransaction:
@@ -102,6 +103,3 @@ class Neo4jAsyncTransaction:
             return session.begin_transaction()
 
         self._transaction = await self._loop.run_in_executor(self._executor, begin_blocking, self._session)
-
-    def __repr__(self):
-        return f"tx: {self._transaction} session: {self._session}"
