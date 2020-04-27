@@ -13,7 +13,7 @@ def load_names_data_set(path: AnyStr) -> List[AnyStr]:
     :param path: the path to the file containing the names
     :return: A list of names if the file is readable else returns none
     """
-    with open(path) as data_file:
+    with open(path, encoding="UTF-8") as data_file:
         try:
             data_json = json.load(data_file)
         except json.JSONDecodeError:

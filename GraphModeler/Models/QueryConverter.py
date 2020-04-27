@@ -15,7 +15,9 @@ def relationship_query(rel: Relationship, node_names: tuple = ("nodeA", "nodeB")
     :return: a string of the query
     """
     node_a, node_b = node_names
-    return f"({node_a})-[{relationship_name}:{rel.relationship_type} {generate_properties(rel)}]-({node_b})"
+    if rel.properties:
+        return f"({node_a})-[{relationship_name}:{rel.relationship_type} {generate_properties(rel)}]-({node_b})"
+    return f"({node_a})-[{relationship_name}:{rel.relationship_type}]-({node_b})"
 
 
 def relationship_nodes_query(rel, node_names: tuple = ("nodeA", "nodeB")) -> AnyStr:
@@ -53,4 +55,3 @@ def node_query(node: Node, node_name="n") -> AnyStr:
     :return: a string of the query
     """
     return f"({node_name}:{':'.join(node.node_types)} {generate_properties(node)})"
-
