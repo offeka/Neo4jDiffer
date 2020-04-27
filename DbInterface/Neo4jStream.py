@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from typing import AnyStr
 
 from neo4j import GraphDatabase
@@ -55,3 +56,13 @@ class Neo4jStream:
         :return: the query result from neo4j
         """
         return self._session.run(query)
+
+    @contextmanager
+    def transaction(self):
+        tx = None
+        try:
+            tx = self._session.begin_transaction()
+            yield tx
+        finally:
+            if tx:
+                tx.commit()

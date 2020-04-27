@@ -1,7 +1,5 @@
 import asyncio
-from typing import Dict, Iterable
-
-from tqdm import tqdm
+from typing import Dict, Iterable, List, Any, Callable, AnyStr
 
 from DbInterface import Neo4jStream
 from DbInterface.Neo4jStreamAsync import Neo4jStreamAsync
@@ -10,6 +8,17 @@ from GraphModeler.DbTranformations.QuerySticher import create_node_query, create
 from GraphModeler.Models import Node, Relationship
 from GraphModeler.Models.Database import Database
 from GraphModeler.Models.Graph import Graph
+
+
+def chunks(chunks_source, chunk_size):
+    """
+    Splits a list into even sized chunks
+    :param chunks_source: the list to split
+    :param chunk_size: the chunk size
+    :return: an iterable of chunks
+    """
+    for i in range(0, len(chunks_source), chunk_size):
+        yield chunks_source[i:i + chunk_size]
 
 
 def export_node_json(node: Node) -> Dict:
@@ -52,24 +61,20 @@ def export_database_json(database: Database) -> Dict:
     return {"name": database.name, "graph": export_graph_json(database.graph)}
 
 
-def export_database_neo4j(database: Database, stream: Neo4jStream) -> None:
+def export_database_neo4j(database: Database, stream: Neo4jStream, commit_size: int) -> None:
     """
     Loads a database from an object into neo4j
     :param database: the database to load
     :param stream: the neo4j interface to use
+    :param commit_size: how many nodes or relationships to write to the database before commiting
     """
-    export_nodes_to_graph(database.graph.nodes, stream)
-    export_relationships_to_graph(database.graph.relationships, stream)
+    export_objects_to_graph(database.graph.nodes, stream, commit_size, create_node_query)
+    export_objects_to_graph(database.graph.relationships, stream, commit_size, create_relationship_query)
 
 
-def export_nodes_to_graph(nodes: Iterable[Node], stream: Neo4jStream) -> None:
-    """
-    Creates a list of nodes in the neo4j graph.
-    :param nodes: the nodes to create in the db
-    :param stream: a neo4j interface to send queries to
-    """
-    for node in nodes:
-        stream.write(create_node_query(node))
+async def export_database_neo4j_async(database: Database, stream: Neo4jStreamAsync):
+    await export_nodes_to_graph_async(database.graph.nodes, stream)
+    await export_relationships_to_graph_async(database.graph.relationships, stream)
 
 
 async def export_nodes_to_graph_async(nodes: Iterable[Node], stream: Neo4jStreamAsync) -> None:
@@ -81,14 +86,19 @@ async def export_nodes_to_graph_async(nodes: Iterable[Node], stream: Neo4jStream
     await asyncio.wait([stream.write_async(create_node_query(node)) for node in nodes])
 
 
-def export_relationships_to_graph(relationships: Iterable[Relationship], stream: Neo4jStream) -> None:
+def export_objects_to_graph(objects: List[Any], stream: Neo4jStream, commit_size: int, query_function: Callable[
+    [Any], AnyStr]) -> None:
     """
-    Writes relationships to the neo4j database.
-    :param relationships: the relationships to create in the db
-    :param stream: a neo4j interface to send queries to
+    Writes an object to a neo4j stream converting it to a neo4j query using the supplied function
+    :param objects: the source objects to write to neo4j
+    :param stream: the neo4j stream to write to
+    :param commit_size: the size of each objects commit
+    :param query_function: the function to convert the object to a neo4j query
     """
-    for relationship in relationships:
-        stream.write(create_relationship_query(relationship))
+    for chunk in chunks(objects, commit_size):
+        for item in chunk:
+            with stream.transaction() as transaction:
+                transaction.run(query_function(item))
 
 
 async def export_relationships_to_graph_async(relationships: Iterable[Relationship], stream: Neo4jStreamAsync) -> None:

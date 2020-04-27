@@ -45,7 +45,7 @@ async def nodes_by_ids_async(nodes: List[Node]) -> Dict[AnyStr, Node]:
     return {node.node_id: node for node in nodes}
 
 
-def import_relationships_neo4j_async(stream: Neo4jStreamAsync, nodes_by_id: Awaitable[Dict[AnyStr, Node]]) -> \
+async def import_relationships_neo4j_async(stream: Neo4jStreamAsync, nodes_by_id: Awaitable[Dict[AnyStr, Node]]) -> \
         List[Relationship]:
     """
     Loads relationships from neo4j graph into python object

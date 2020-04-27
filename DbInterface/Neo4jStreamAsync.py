@@ -66,7 +66,7 @@ class Neo4jStreamAsync:
             def run():
                 return session.run(query)
 
-            await self._loop.run_in_executor(self._executor, run)
+        await self._loop.run_in_executor(self._executor, run)
 
     async def read_async(self, query):
         """
@@ -78,6 +78,6 @@ class Neo4jStreamAsync:
             def run():
                 return session.run(query).records()
 
-            query_results = await self._loop.run_in_executor(self._executor, run)
+        query_results = await self._loop.run_in_executor(self._executor, run)
         for result in query_results:
             yield result
