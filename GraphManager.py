@@ -28,16 +28,16 @@ def neo4j_command(args) -> None:
     Handles the neo4j side of the cli
     :param args: the args from the command line
     """
-    # asyncio.run(run_command(args))
+    asyncio.run(run_command(args))
 
-    with Neo4jStream(args.address, args.username, args.password) as stream:
-        if args.mode == "load":
-            with open(args.database) as db_file:
-                db_json = json.load(db_file)
-            database = import_database_json(db_json)
-            export_database_neo4j(database, stream)
-        elif args.mode == "delete":
-            delete_database_neo4j(stream)
+    # with Neo4jStream(args.address, args.username, args.password) as stream:
+    #     if args.mode == "load":
+    #         with open(args.database) as db_file:
+    #             db_json = json.load(db_file)
+    #         database = import_database_json(db_json)
+    #         export_database_neo4j(database, stream, args.commit_size)
+    #     elif args.mode == "delete":
+    #         delete_database_neo4j(stream)
 
 
 async def run_command(args):
@@ -46,7 +46,7 @@ async def run_command(args):
             with open(args.database) as db_file:
                 db_json = json.load(db_file)
             database = import_database_json(db_json)
-            await export_database_neo4j_async(database, stream)
+            await export_database_neo4j_async(database, stream, args.commit_size)
         elif args.mode == "delete":
             await delete_database_neo4j_async(stream)
 

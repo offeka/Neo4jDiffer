@@ -29,6 +29,9 @@ class Neo4jStreamAsync:
         self._driver = GraphDatabase.driver(self._address, auth=(self._username, self._password),
                                             encrypted=self._encrypted)
 
+    def close(self):
+        self._driver.close()
+
     async def __aenter__(self):
         self.connect()
         return self
@@ -36,48 +39,69 @@ class Neo4jStreamAsync:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         self.close()
 
-    @asynccontextmanager
-    async def __session(self):
-        session = None
-        try:
-            def connect():
-                return self._driver.session()
-
-            session = await self._loop.run_in_executor(self._executor, connect)
-            yield session
-        finally:
-            def disconnect():
-                session.close()
-
-            if session:
-                await self._loop.run_in_executor(self._executor, disconnect)
-
-    def close(self):
-        self._driver.close()
-
-    async def write_async(self, query):
+    async def read_async(self, query: AnyStr):
         """
-        Writes data to neo4j
-        :param query:
-        :return:
-        """
-
-        async with self.__session() as session:
-            def run():
-                return session.run(query)
-
-        await self._loop.run_in_executor(self._executor, run)
-
-    async def read_async(self, query):
-        """
-        Reads results from neo4j lazily and returns them as an iterator
+        Reads results from the database in an async manner
         :param query: the query to run
-        :return: the results iterator
+        :return: the results
         """
-        async with self.__session() as session:
-            def run():
-                return session.run(query).records()
+        return await self._loop.run_in_executor(self._executor, self.__run, query)
 
-        query_results = await self._loop.run_in_executor(self._executor, run)
-        for result in query_results:
-            yield result
+    async def write_async(self, query: AnyStr):
+        """
+        Writes to a neo4j database in an async manner
+        :param query: the query to write
+        """
+        await self._loop.run_in_executor(self._executor, self.__run, query)
+
+    def __run(self, query: AnyStr):
+        with self._driver.session() as session:
+            result = session.run(query)
+        return result.records()
+
+    async def get_session(self):
+        def get(driver):
+            return driver.session()
+
+        return await self._loop.run_in_executor(self._executor, get, self._driver)
+
+    @asynccontextmanager
+    async def transaction(self):
+        transaction = None
+        try:
+            with await self.get_session() as session:
+                transaction = Neo4jAsyncTransaction(session, self._loop, self._executor)
+                await transaction.begin_transaction()
+                yield transaction
+        finally:
+            if transaction:
+                await transaction.commit()
+
+
+class Neo4jAsyncTransaction:
+    def __init__(self, session, loop, executor):
+        self._session = session
+        self._loop = loop
+        self._executor = executor
+        self._transaction = None
+
+    async def run(self, query):
+        def run_blocking(transaction, data):
+            transaction.run(data)
+
+        await self._loop.run_in_executor(self._executor, run_blocking, self._transaction, query)
+
+    async def commit(self):
+        def commit_blocking(transaction):
+            transaction.commit()
+
+        await self._loop.run_in_executor(self._executor, commit_blocking, self._transaction)
+
+    async def begin_transaction(self):
+        def begin_blocking(session):
+            return session.begin_transaction()
+
+        self._transaction = await self._loop.run_in_executor(self._executor, begin_blocking, self._session)
+
+    def __repr__(self):
+        return f"tx: {self._transaction} session: {self._session}"
